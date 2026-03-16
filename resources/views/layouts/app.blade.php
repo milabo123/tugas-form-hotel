@@ -41,6 +41,13 @@
             font-weight: 400;
             color: var(--text-main);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Dorong footer ke bawah */
+        main.container {
+            flex: 1 0 auto;
         }
 
         /* ── NAVBAR ── */

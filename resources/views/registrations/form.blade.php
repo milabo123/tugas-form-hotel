@@ -414,22 +414,6 @@
             @error('payment_method')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
 
-        {{-- Status Pembayaran --}}
-        <div class="col-md-3">
-            <label class="form-label fw-semibold">
-                Status Pembayaran <small class="text-muted">(Payment Status)</small>
-            </label>
-            @php $payStatus = old('payment_status', $reg?->payment_status ?? 'unpaid'); @endphp
-            <select name="payment_status"
-                    class="form-select @error('payment_status') is-invalid @enderror">
-                <option value="unpaid"   {{ $payStatus === 'unpaid'   ? 'selected' : '' }}>⬜ Belum Bayar</option>
-                <option value="partial"  {{ $payStatus === 'partial'  ? 'selected' : '' }}>🟡 Sebagian (Partial)</option>
-                <option value="paid"     {{ $payStatus === 'paid'     ? 'selected' : '' }}>🟢 Lunas (Paid)</option>
-                <option value="refunded" {{ $payStatus === 'refunded' ? 'selected' : '' }}>🔵 Dikembalikan (Refunded)</option>
-            </select>
-            @error('payment_status')<div class="invalid-feedback">{{ $message }}</div>@enderror
-        </div>
-
         {{-- Jumlah Pembayaran --}}
         <div class="col-md-3">
             <label class="form-label fw-semibold">

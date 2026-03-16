@@ -63,6 +63,10 @@ class RegistrationRequest extends FormRequest
             'safety_deposit_box_number' => 'nullable|string|max:50',
             'issued_by'                => 'nullable|string|max:100',
             'issued_date'              => 'nullable|date',
+            'payment_method'           => 'nullable|string|max:50',
+            'payment_amount'           => 'nullable|numeric|min:0',
+            'payment_reference'        => 'nullable|string|max:100',
+            'payment_notes'            => 'nullable|string|max:500',
         ];
     }
 

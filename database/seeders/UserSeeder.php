@@ -34,8 +34,7 @@ class UserSeeder extends Seeder
         $this->command->table(
             ['Nama', 'Email', 'Password'],
             [
-                ['Admin PPKD',   'admin@ppkdhotel.com',        'admin123'],
-                ['Resepsionis',  'resepsionis@ppkdhotel.com',  'resepsionis123'],
+                ['Resepsionis',  'resepsionis@ppkdhotel.com',  'resepsionis123']
             ]
         );
     }

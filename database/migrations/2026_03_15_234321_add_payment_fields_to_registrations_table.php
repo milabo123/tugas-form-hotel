@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('registrations', function (Blueprint $table) {
             Schema::table('registrations', function (Blueprint $table) {
                 $table->string('payment_method')->nullable()->after('issued_date');
-                $table->string('payment_status')->nullable()->default('unpaid')->after('payment_method');
                 $table->decimal('payment_amount', 12, 2)->nullable()->after('payment_status');
                 $table->string('payment_reference')->nullable()->after('payment_amount');
                 $table->text('payment_notes')->nullable()->after('payment_reference');
@@ -31,7 +30,6 @@ return new class extends Migration
             Schema::table('registrations', function (Blueprint $table) {
                 $table->dropColumn([
                     'payment_method',
-                    'payment_status',
                     'payment_amount',
                     'payment_reference',
                     'payment_notes',

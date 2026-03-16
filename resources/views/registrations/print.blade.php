@@ -282,9 +282,11 @@
 
     {{-- ══ HEADER ══ --}}
     <div class="header">
-        {{-- Logo placeholder lingkaran --}}
+        {{-- Logo PPKD Jakarta Pusat --}}
         <div class="logo">
-            <div class="logo-text">PPKD<br>JAKARTA<br>PUSAT</div>
+            <img src="{{ asset('images/Logo-PPKD-JakPus.jpeg') }}"
+                 alt="Logo PPKD Jakarta Pusat"
+                 style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
         </div>
         <h1>PPKD HOTEL</h1>
     </div>
