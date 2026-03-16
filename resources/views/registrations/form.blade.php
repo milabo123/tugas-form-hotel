@@ -430,6 +430,24 @@
             <div id="payment-amount-hint" class="form-text text-muted" style="font-size:.75rem"></div>
         </div>
 
+        {{-- Total Harus Dibayar (otomatis dari estimasi) --}}
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+                Harus Dibayar <small class="text-muted">(Total Tagihan)</small>
+            </label>
+            <div class="p-2 rounded-2 d-flex flex-column justify-content-center"
+                 style="border: 1.5px dashed var(--border); background: var(--surface); min-height: 42px;">
+                <div id="total-tagihan-display"
+                     style="font-size:1rem; font-weight:700; color:var(--primary); letter-spacing:.3px;">
+                    —
+                </div>
+                <div id="total-tagihan-detail"
+                     style="font-size:.7rem; color:var(--text-muted); margin-top:1px;">
+                    Pilih kamar &amp; tanggal
+                </div>
+            </div>
+        </div>
+
         {{-- No. Referensi (muncul jika bukan cash) --}}
         <div class="col-md-2" id="payment-reference-wrapper"
              style="{{ old('payment_method', $reg?->payment_method) === 'cash' || !old('payment_method', $reg?->payment_method) ? 'display:none' : '' }}">
@@ -507,6 +525,51 @@ function getEstimatedTotal() {
     if (!el) return 0;
     const raw = el.textContent.replace(/[^\d]/g, '');
     return parseFloat(raw) || 0;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Update box "Harus Dibayar" di samping field jumlah dibayar
+// ─────────────────────────────────────────────────────────────────────────────
+function updateTotalTagihan() {
+    const displayEl = document.getElementById('total-tagihan-display');
+    const detailEl  = document.getElementById('total-tagihan-detail');
+    if (!displayEl || !detailEl) return;
+
+    const total  = getEstimatedTotal();
+    const nights = getNights();
+    const room1  = getSelectedRoomData('room_id_1');
+    const room2  = getSelectedRoomData('room_id_2');
+
+    if (total > 0) {
+        displayEl.textContent = rupiah(total);
+        displayEl.style.color = 'var(--primary)';
+
+        // Detail breakdown singkat
+        const parts = [];
+        if (room1) parts.push(`${room1.number}: ${rupiah(room1.price)}`);
+        if (room2) parts.push(`${room2.number}: ${rupiah(room2.price)}`);
+        const roomInfo  = parts.join(' + ');
+        const nightInfo = nights > 0 ? `× ${nights} malam` : '';
+        detailEl.textContent = roomInfo && nightInfo ? `${roomInfo} ${nightInfo}` : roomInfo || '—';
+    } else if (room1 || room2) {
+        // Ada kamar tapi harga belum diset atau tanggal belum diisi
+        if (nights <= 0) {
+            displayEl.textContent = '—';
+            displayEl.style.color = 'var(--text-muted)';
+            detailEl.textContent  = 'Isi tanggal masuk & keluar';
+        } else {
+            displayEl.textContent = '—';
+            displayEl.style.color = 'var(--text-muted)';
+            detailEl.textContent  = 'Harga kamar belum diset';
+        }
+    } else {
+        displayEl.textContent = '—';
+        displayEl.style.color = 'var(--text-muted)';
+        detailEl.textContent  = 'Pilih kamar & tanggal';
+    }
+
+    // Selalu update hint jumlah bayar juga
+    updatePaymentHint();
 }
 
 document.getElementById('payment_amount')?.addEventListener('input', updatePaymentHint);
@@ -625,6 +688,7 @@ function calcDuration() {
         durationEl.className   = 'fs-5';
     }
     updatePriceSummary(); // re-hitung total setiap tanggal berubah
+    updateTotalTagihan(); // update box harus dibayar
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -634,6 +698,7 @@ function showRoom2() {
     document.getElementById('room2-wrapper').style.display = 'block';
     document.getElementById('btn-add-room').style.display  = 'none';
     updatePriceSummary();
+    updateTotalTagihan();
 }
 
 function hideRoom2() {
@@ -644,6 +709,7 @@ function hideRoom2() {
     document.getElementById('room2-wrapper').style.display = 'none';
     document.getElementById('btn-add-room').style.display  = 'inline-flex';
     updatePriceSummary();
+    updateTotalTagihan();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -656,6 +722,7 @@ function onRoomChange(changedSelect, otherSelectId) {
     updateRoomBadge(changedSelect, infoDivId);
     syncDisabledOptions(otherSelectId, selectedId);
     updatePriceSummary();
+    updateTotalTagihan();
 }
 
 function syncDisabledOptions(targetSelectId, excludeId) {
@@ -699,6 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (r1?.value) { updateRoomBadge(r1, 'room1-info'); syncDisabledOptions('room_id_2', r1.value); }
     if (r2?.value) { updateRoomBadge(r2, 'room2-info'); syncDisabledOptions('room_id_1', r2.value); }
     updatePriceSummary();
+    updateTotalTagihan(); // inisialisasi box harus dibayar saat page load (mode edit)
 });
 </script>
 @endpush
