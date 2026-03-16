@@ -36,6 +36,11 @@ class Registration extends Model
         'safety_deposit_box_number',
         'issued_by',
         'issued_date',
+        'payment_method',
+        'payment_status',
+        'payment_amount',
+        'payment_reference',
+        'payment_notes',
     ];
 
     protected $casts = [
@@ -44,6 +49,7 @@ class Registration extends Model
         'departure_date' => 'date',
         'arrival_time'   => 'datetime',
         'issued_date'    => 'date',
+        'payment_amount' => 'decimal:2',
     ];
 
     // Relationships
@@ -71,6 +77,43 @@ class Registration extends Model
         if ($this->room1) $rooms[] = $this->room1->room_number;
         if ($this->room2) $rooms[] = $this->room2->room_number;
         return implode(' & ', $rooms) ?: '-';
+    }
+
+    public function getPaymentStatusLabelAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'paid'        => 'Lunas',
+            'partial'     => 'Sebagian',
+            'unpaid'      => 'Belum Bayar',
+            'refunded'    => 'Dikembalikan',
+            default       => ucfirst($this->payment_status ?? '-'),
+        };
+    }
+
+    public function getPaymentStatusColorAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'paid'     => 'success',
+            'partial'  => 'warning',
+            'unpaid'   => 'danger',
+            'refunded' => 'secondary',
+            default    => 'secondary',
+        };
+    }
+
+    public function getPaymentMethodLabelAttribute(): string
+    {
+        return match ($this->payment_method) {
+            'cash'         => 'Tunai (Cash)',
+            'credit_card'  => 'Kartu Kredit',
+            'debit_card'   => 'Kartu Debit',
+            'transfer'     => 'Transfer Bank',
+            'qris'         => 'QRIS',
+            'ovo'          => 'OVO',
+            'gopay'        => 'GoPay',
+            'dana'         => 'DANA',
+            default        => $this->payment_method ?? '-',
+        };
     }
 
     // Scopes

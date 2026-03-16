@@ -358,9 +358,186 @@
     </div>
 </div>
 
+{{-- ==================== SECTION: METODE PEMBAYARAN ==================== --}}
+<div class="mb-4">
+    <div class="section-title"><i class="bi bi-credit-card me-2"></i>Metode Pembayaran / Payment Method</div>
+    <div class="row g-3">
+
+        {{-- Metode Pembayaran --}}
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">
+                Metode Pembayaran <small class="text-muted">(Payment Method)</small>
+            </label>
+            <select name="payment_method" id="payment_method"
+                    class="form-select @error('payment_method') is-invalid @enderror"
+                    onchange="onPaymentMethodChange(this)">
+                <option value="">-- Pilih Metode --</option>
+                <optgroup label="Tunai">
+                    <option value="cash"
+                        {{ old('payment_method', $reg?->payment_method) === 'cash' ? 'selected' : '' }}>
+                        💵 Tunai (Cash)
+                    </option>
+                </optgroup>
+                <optgroup label="Kartu">
+                    <option value="credit_card"
+                        {{ old('payment_method', $reg?->payment_method) === 'credit_card' ? 'selected' : '' }}>
+                        💳 Kartu Kredit
+                    </option>
+                    <option value="debit_card"
+                        {{ old('payment_method', $reg?->payment_method) === 'debit_card' ? 'selected' : '' }}>
+                        💳 Kartu Debit
+                    </option>
+                </optgroup>
+                <optgroup label="Transfer & Digital">
+                    <option value="transfer"
+                        {{ old('payment_method', $reg?->payment_method) === 'transfer' ? 'selected' : '' }}>
+                        🏦 Transfer Bank
+                    </option>
+                    <option value="qris"
+                        {{ old('payment_method', $reg?->payment_method) === 'qris' ? 'selected' : '' }}>
+                        📱 QRIS
+                    </option>
+                    <option value="ovo"
+                        {{ old('payment_method', $reg?->payment_method) === 'ovo' ? 'selected' : '' }}>
+                        🟣 OVO
+                    </option>
+                    <option value="gopay"
+                        {{ old('payment_method', $reg?->payment_method) === 'gopay' ? 'selected' : '' }}>
+                        🟢 GoPay
+                    </option>
+                    <option value="dana"
+                        {{ old('payment_method', $reg?->payment_method) === 'dana' ? 'selected' : '' }}>
+                        🔵 DANA
+                    </option>
+                </optgroup>
+            </select>
+            @error('payment_method')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        {{-- Status Pembayaran --}}
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+                Status Pembayaran <small class="text-muted">(Payment Status)</small>
+            </label>
+            @php $payStatus = old('payment_status', $reg?->payment_status ?? 'unpaid'); @endphp
+            <select name="payment_status"
+                    class="form-select @error('payment_status') is-invalid @enderror">
+                <option value="unpaid"   {{ $payStatus === 'unpaid'   ? 'selected' : '' }}>⬜ Belum Bayar</option>
+                <option value="partial"  {{ $payStatus === 'partial'  ? 'selected' : '' }}>🟡 Sebagian (Partial)</option>
+                <option value="paid"     {{ $payStatus === 'paid'     ? 'selected' : '' }}>🟢 Lunas (Paid)</option>
+                <option value="refunded" {{ $payStatus === 'refunded' ? 'selected' : '' }}>🔵 Dikembalikan (Refunded)</option>
+            </select>
+            @error('payment_status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        {{-- Jumlah Pembayaran --}}
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">
+                Jumlah Dibayar <small class="text-muted">(Amount Paid)</small>
+            </label>
+            <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="payment_amount" id="payment_amount"
+                       class="form-control @error('payment_amount') is-invalid @enderror"
+                       value="{{ old('payment_amount', $reg?->payment_amount ? (int) $reg->payment_amount : '') }}"
+                       min="0" step="1000" placeholder="0">
+            </div>
+            @error('payment_amount')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <div id="payment-amount-hint" class="form-text text-muted" style="font-size:.75rem"></div>
+        </div>
+
+        {{-- No. Referensi (muncul jika bukan cash) --}}
+        <div class="col-md-2" id="payment-reference-wrapper"
+             style="{{ old('payment_method', $reg?->payment_method) === 'cash' || !old('payment_method', $reg?->payment_method) ? 'display:none' : '' }}">
+            <label class="form-label fw-semibold">No. Referensi</label>
+            <input type="text" name="payment_reference"
+                   class="form-control @error('payment_reference') is-invalid @enderror"
+                   value="{{ old('payment_reference', $reg?->payment_reference) }}"
+                   placeholder="No. transaksi / VA">
+            @error('payment_reference')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <div class="form-text" style="font-size:.72rem">No. transaksi / kode booking</div>
+        </div>
+
+        {{-- Catatan Pembayaran --}}
+        <div class="col-12">
+            <label class="form-label">Catatan Pembayaran <small class="text-muted">(Payment Notes)</small></label>
+            <textarea name="payment_notes" rows="2"
+                      class="form-control @error('payment_notes') is-invalid @enderror"
+                      placeholder="Contoh: DP 50%, pelunasan saat check-in, dll.">{{ old('payment_notes', $reg?->payment_notes) }}</textarea>
+            @error('payment_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+    </div>
+</div>
+
 @push('scripts')
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
+// Tampilkan / sembunyikan field No. Referensi berdasarkan metode pembayaran
+// ─────────────────────────────────────────────────────────────────────────────
+function onPaymentMethodChange(select) {
+    const refWrapper = document.getElementById('payment-reference-wrapper');
+    const method     = select.value;
+    // Cash tidak perlu no. referensi; metode lain butuh
+    if (method && method !== 'cash') {
+        refWrapper.style.display = 'block';
+    } else {
+        refWrapper.style.display = 'none';
+        const refInput = refWrapper.querySelector('input');
+        if (refInput) refInput.value = '';
+    }
+    updatePaymentHint();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tampilkan hint perbandingan jumlah bayar vs estimasi total
+// ─────────────────────────────────────────────────────────────────────────────
+function updatePaymentHint() {
+    const amountInput = document.getElementById('payment_amount');
+    const hintEl      = document.getElementById('payment-amount-hint');
+    if (!amountInput || !hintEl) return;
+
+    const paid    = parseFloat(amountInput.value) || 0;
+    const total   = getEstimatedTotal();
+
+    if (total > 0 && paid > 0) {
+        const diff = paid - total;
+        if (diff < 0) {
+            hintEl.textContent = `Kurang ${rupiah(Math.abs(diff))} dari estimasi total`;
+            hintEl.style.color = '#dc3545';
+        } else if (diff > 0) {
+            hintEl.textContent = `Lebih ${rupiah(diff)} dari estimasi total`;
+            hintEl.style.color = '#198754';
+        } else {
+            hintEl.textContent = '✓ Sesuai estimasi total';
+            hintEl.style.color = '#198754';
+        }
+    } else {
+        hintEl.textContent = '';
+    }
+}
+
+// Helper: baca estimasi total dari grand-total element
+function getEstimatedTotal() {
+    const el = document.getElementById('grand-total');
+    if (!el) return 0;
+    const raw = el.textContent.replace(/[^\d]/g, '');
+    return parseFloat(raw) || 0;
+}
+
+document.getElementById('payment_amount')?.addEventListener('input', updatePaymentHint);
+
+// Inisialisasi saat halaman dimuat (untuk mode edit)
+document.addEventListener('DOMContentLoaded', () => {
+    const methodSelect = document.getElementById('payment_method');
+    if (methodSelect?.value) onPaymentMethodChange(methodSelect);
+});
+</script>
+
+<script>
+
+
+    // ─────────────────────────────────────────────────────────────────────────────
 // Format angka ke Rupiah
 // ─────────────────────────────────────────────────────────────────────────────
 function rupiah(n) {
@@ -415,12 +592,12 @@ function updatePriceSummary() {
     breakdown.innerHTML = rooms.map(r => {
         totalPerMalam += r.price;
         return `<div class="d-flex align-items-center gap-2">
-            <span class="badge bg-secondary-subtle text-secondary border" style="font-size:.8rem; min-width:60px">
-                ${r.number}
+        <span class="badge bg-secondary-subtle text-secondary border" style="font-size:.8rem; min-width:60px">
+        ${r.number}
             </span>
             <span class="small text-muted">${r.type}</span>
             <span class="ms-auto fw-semibold small">${rupiah(r.price)} <span class="text-muted fw-normal">/ malam</span></span>
-        </div>`;
+            </div>`;
     }).join('');
 
     // Jumlah malam
@@ -503,8 +680,8 @@ function syncDisabledOptions(targetSelectId, excludeId) {
     Array.from(target.options).forEach(opt => {
         if (!opt.value) return;
         opt.disabled = opt.dataset.occupied === 'true'
-                    || opt.dataset.maintenance === 'true'
-                    || (excludeId && opt.value === excludeId);
+        || opt.dataset.maintenance === 'true'
+        || (excludeId && opt.value === excludeId);
     });
 }
 
@@ -522,7 +699,7 @@ function updateRoomBadge(select, divId) {
     div.innerHTML = `
         <span class="badge bg-${color}-subtle text-${color} border border-${color}-subtle">
             <i class="bi bi-door-closed me-1"></i>${text}
-        </span>`;
+            </span>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

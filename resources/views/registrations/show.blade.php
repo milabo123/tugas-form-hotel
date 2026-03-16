@@ -4,62 +4,62 @@
 
 @section('content')
 <div class="d-flex align-items-center gap-3 mb-4">
-    <a href="{{ route('registrations.index') }}" class="btn btn-sm btn-outline-secondary">
+    <a href="{{ route('registrations.index') }}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px">
         <i class="bi bi-arrow-left"></i>
     </a>
     <div>
-        <h4 class="fw-bold mb-0" style="color: var(--hotel-primary)">
-            <i class="bi bi-person-badge me-2"></i>Detail Registrasi #{{ $registration->id }}
+        <h4 class="fw-bold mb-0" style="font-family:'Playfair Display',serif; color: var(--primary)">
+            <i class="bi bi-person-badge me-2" style="color:var(--gold)"></i>Detail Registrasi #{{ $registration->id }}
         </h4>
         <small class="text-muted">Terdaftar: {{ $registration->created_at->format('d M Y, H:i') }}</small>
     </div>
     <div class="ms-auto d-flex gap-2">
         <a href="{{ route('registrations.print', $registration) }}" target="_blank"
-           class="btn btn-outline-secondary">
+           class="btn btn-sm btn-outline-secondary" style="border-radius:8px">
             <i class="bi bi-printer me-1"></i> Cetak
         </a>
-        <a href="{{ route('registrations.edit', $registration) }}" class="btn btn-primary-hotel">
+        <a href="{{ route('registrations.edit', $registration) }}" class="btn btn-ppkd-primary btn-sm">
             <i class="bi bi-pencil me-1"></i> Edit
         </a>
     </div>
 </div>
 
 {{-- Room Info Banner --}}
-<div class="card mb-4" style="background: linear-gradient(135deg, var(--hotel-primary), #2d5986); color: #fff; border: none;">
-    <div class="card-body d-flex flex-wrap gap-4 align-items-center py-3">
+<div class="card mb-4" style="background: linear-gradient(120deg, var(--primary) 0%, var(--primary-mid) 100%); border: none; border-bottom: 3px solid var(--gold);">
+    <div class="card-body d-flex flex-wrap gap-4 align-items-center py-3 px-4">
         <div>
-            <small class="opacity-75 d-block">Kamar</small>
+            <small style="color:rgba(255,255,255,.6); display:block; font-size:.75rem; letter-spacing:.5px; text-transform:uppercase;">Kamar</small>
             <div class="d-flex gap-2 mt-1">
                 @if($registration->room_number_1)
-                    <span class="badge badge-room fs-6">{{ $registration->room_number_1 }}</span>
+                    <span class="badge-room" style="font-size:.9rem;">{{ $registration->room_number_1 }}</span>
                 @endif
                 @if($registration->room_number_2)
-                    <span class="badge badge-room fs-6">{{ $registration->room_number_2 }}</span>
+                    <span class="badge-room" style="font-size:.9rem;">{{ $registration->room_number_2 }}</span>
                 @endif
                 @if(!$registration->room_number_1 && !$registration->room_number_2)
-                    <span class="opacity-50">-</span>
+                    <span style="color:rgba(255,255,255,.4)">-</span>
                 @endif
             </div>
         </div>
-        <div class="vr opacity-25"></div>
+        <div style="width:1px; height:36px; background:rgba(255,255,255,.15)"></div>
         <div>
-            <small class="opacity-75 d-block">Tipe Kamar</small>
-            <strong>{{ $registration->room_type ?? '-' }}</strong>
+            <small style="color:rgba(255,255,255,.6); display:block; font-size:.75rem; letter-spacing:.5px; text-transform:uppercase;">Tipe Kamar</small>
+            <strong style="color:#fff">{{ $registration->room_type ?? '-' }}</strong>
         </div>
-        <div class="vr opacity-25"></div>
+        <div style="width:1px; height:36px; background:rgba(255,255,255,.15)"></div>
         <div>
-            <small class="opacity-75 d-block">Jumlah Tamu</small>
-            <strong>{{ $registration->number_of_persons ?? '-' }} orang</strong>
+            <small style="color:rgba(255,255,255,.6); display:block; font-size:.75rem; letter-spacing:.5px; text-transform:uppercase;">Jumlah Tamu</small>
+            <strong style="color:#fff">{{ $registration->number_of_persons ?? '-' }} orang</strong>
         </div>
-        <div class="vr opacity-25"></div>
+        <div style="width:1px; height:36px; background:rgba(255,255,255,.15)"></div>
         <div>
-            <small class="opacity-75 d-block">Lama Menginap</small>
-            <strong>{{ $registration->duration_of_stay ?? '-' }} malam</strong>
+            <small style="color:rgba(255,255,255,.6); display:block; font-size:.75rem; letter-spacing:.5px; text-transform:uppercase;">Lama Menginap</small>
+            <strong style="color:#fff">{{ $registration->duration_of_stay ?? '-' }} malam</strong>
         </div>
-        <div class="vr opacity-25"></div>
+        <div style="width:1px; height:36px; background:rgba(255,255,255,.15)"></div>
         <div>
-            <small class="opacity-75 d-block">Resepsionis</small>
-            <strong>{{ $registration->receptionist ?? '-' }}</strong>
+            <small style="color:rgba(255,255,255,.6); display:block; font-size:.75rem; letter-spacing:.5px; text-transform:uppercase;">Resepsionis</small>
+            <strong style="color:#fff">{{ $registration->receptionist ?? '-' }}</strong>
         </div>
     </div>
 </div>
@@ -68,16 +68,16 @@
     {{-- Data Tamu --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="section-title"><i class="bi bi-person me-2"></i>Data Tamu</div>
-                <table class="table table-borderless table-sm">
-                    <tr><td class="text-muted" style="width:40%">Nama</td><td class="fw-semibold">{{ $registration->name }}</td></tr>
-                    <tr><td class="text-muted">Pekerjaan</td><td>{{ $registration->profession ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Perusahaan</td><td>{{ $registration->company ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Kebangsaan</td><td>{{ $registration->nationality ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">No. KTP/Paspor</td><td>{{ $registration->id_passport_number ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Tanggal Lahir</td><td>{{ $registration->birth_date?->format('d M Y') ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">No. Member</td><td>{{ $registration->member_number ?? '-' }}</td></tr>
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><td class="text-muted small" style="width:40%; padding-left:0">Nama</td><td class="fw-semibold">{{ $registration->name }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Pekerjaan</td><td>{{ $registration->profession ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Perusahaan</td><td>{{ $registration->company ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Kebangsaan</td><td>{{ $registration->nationality ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">No. KTP/Paspor</td><td>{{ $registration->id_passport_number ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Tanggal Lahir</td><td>{{ $registration->birth_date?->format('d M Y') ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">No. Member</td><td>{{ $registration->member_number ?? '-' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -86,13 +86,13 @@
     {{-- Kontak --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="section-title"><i class="bi bi-telephone me-2"></i>Kontak & Alamat</div>
-                <table class="table table-borderless table-sm">
-                    <tr><td class="text-muted" style="width:40%">Alamat</td><td>{{ $registration->address ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Telepon</td><td>{{ $registration->phone ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Handphone</td><td>{{ $registration->mobile_phone ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Email</td><td>{{ $registration->email ?? '-' }}</td></tr>
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><td class="text-muted small" style="width:40%; padding-left:0">Alamat</td><td>{{ $registration->address ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Telepon</td><td>{{ $registration->phone ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Handphone</td><td>{{ $registration->mobile_phone ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Email</td><td>{{ $registration->email ?? '-' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -101,17 +101,17 @@
     {{-- Waktu Menginap --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="section-title"><i class="bi bi-calendar-range me-2"></i>Waktu Menginap</div>
-                <table class="table table-borderless table-sm">
-                    <tr><td class="text-muted" style="width:40%">Tgl. Kedatangan</td><td>{{ $registration->arrival_date?->format('d M Y') ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Waktu Kedatangan</td><td>{{ $registration->arrival_time?->format('H:i') ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Tgl. Keberangkatan</td><td>{{ $registration->departure_date?->format('d M Y') ?? '-' }}</td></tr>
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><td class="text-muted small" style="width:40%; padding-left:0">Tgl. Kedatangan</td><td>{{ $registration->arrival_date?->format('d M Y') ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Waktu Kedatangan</td><td>{{ $registration->arrival_time?->format('H:i') ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Tgl. Keberangkatan</td><td>{{ $registration->departure_date?->format('d M Y') ?? '-' }}</td></tr>
                     <tr>
-                        <td class="text-muted">Lama Menginap</td>
+                        <td class="text-muted small" style="padding-left:0">Lama Menginap</td>
                         <td>
                             @if($registration->duration_of_stay !== null)
-                                <span class="badge bg-info-subtle text-info fw-semibold">
+                                <span class="badge" style="background:rgba(30,80,153,.1); color:var(--primary-light); font-weight:600;">
                                     {{ $registration->duration_of_stay }} malam
                                 </span>
                             @else
@@ -127,12 +127,12 @@
     {{-- Safety Deposit Box --}}
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-body">
+            <div class="card-body p-4">
                 <div class="section-title"><i class="bi bi-safe me-2"></i>Kotak Deposit</div>
-                <table class="table table-borderless table-sm">
-                    <tr><td class="text-muted" style="width:40%">Nomor Kotak</td><td>{{ $registration->safety_deposit_box_number ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Dikeluarkan Oleh</td><td>{{ $registration->issued_by ?? '-' }}</td></tr>
-                    <tr><td class="text-muted">Tanggal</td><td>{{ $registration->issued_date?->format('d M Y') ?? '-' }}</td></tr>
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><td class="text-muted small" style="width:40%; padding-left:0">Nomor Kotak</td><td>{{ $registration->safety_deposit_box_number ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Dikeluarkan Oleh</td><td>{{ $registration->issued_by ?? '-' }}</td></tr>
+                    <tr><td class="text-muted small" style="padding-left:0">Tanggal</td><td>{{ $registration->issued_date?->format('d M Y') ?? '-' }}</td></tr>
                 </table>
             </div>
         </div>
